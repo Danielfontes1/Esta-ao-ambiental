@@ -139,6 +139,8 @@ iframe {
   <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
   <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
   <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
   <main class="container">
     <header>
       <h1>Medidor de Clima Pedreira</h1>
@@ -154,13 +156,25 @@ iframe {
         <div class="card-label">Luz (LDR)</div>
         <div class="card-value" id="valor-luz">--</div>
         <div class="card-sub" id="status-luz">Sem leitura</div>
+      
+      </article>
+      <article class="card">
+        <div class="card-label">Temperatura 🌡️</div>
+        <div class="card-value" id="valor-temp">--</div>
+        <div class="card-sub" id="status-temp">-- °C</div>
       </article>
 
       <article class="card">
-        <div class="card-label">Chuva</div>
-        <div class="card-value" id="valor-chuva">--</div>
-        <div class="card-sub" id="status-chuva">Sem leitura</div>
+        <div class="card-label">Umidade 💧</div>
+        <div class="card-value" id="valor-umid">--</div>
+        <div class="card-sub" id="status-umid">-- %</div>
       </article>
+
+        <article class="card">
+          <div class="card-label">Chuva</div>
+          <div class="card-value" id="valor-chuva">--</div>
+          <div class="card-sub" id="status-chuva">Sem leitura</div>
+        </article>
 
       <article class="card">
         <div class="card-label">Gás (MQ-135)</div>
