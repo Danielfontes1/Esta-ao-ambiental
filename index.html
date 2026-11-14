@@ -190,62 +190,69 @@ iframe {
 
 
    <script>
-async function buscarDados() {
-    try {
-        // 1. URL da API do ThingSpeak para buscar a última leitura registrada
-        const url = "https://api.thingspeak.com/channels/3578582/feeds/last.json?api_key=QJ89U0PM4PB95D1L";
-        const resposta = await fetch(url);
+  const CHANNEL_ID = "3578582";
+  const API_KEY = "QJ89U0PM4PB95D1L";
+  const INTERVALO_MS = 15000;
 
-        if (!resposta.ok) {
-            throw new Error(`Erro HTTP: ${resposta.status}`);
-        }
-
-        const dados = await resposta.json();
-
-        // 2. Extrai os dados dos sensores (field1 = Luz, field2 = Chuva, field3 = Gás)
-        const luz = (dados && dados.field1 !== null && dados.field1 !== undefined) ? dados.field1 : "--";
-        const chuva = (dados && dados.field2 !== null && dados.field2 !== undefined) ? dados.field2 : "--";
-        const gas = (dados && dados.field3 !== null && dados.field3 !== undefined) ? dados.field3 : "--";
-
-        // 3. Atualiza os números principais nos cards
-        const elLuz = document.getElementById("valor-luz");
-        const elChuva = document.getElementById("valor-chuva");
-        const elGas = document.getElementById("valor-gas");
-
-        if (elLuz) elLuz.textContent = luz;
-        if (elChuva) elChuva.textContent = chuva;
-        if (elGas) elGas.textContent = gas;
-
-        // 4. Atualiza os sub-status abaixo de cada valor nos cards
-        const stLuz = document.getElementById("status-luz");
-        const stChuva = document.getElementById("status-chuva");
-        const stGas = document.getElementById("status-gas");
-
-        if (stLuz) stLuz.textContent = luz !== "--" ? "Leitura ativa" : "Sem leitura";
-        if (stChuva) stChuva.textContent = chuva !== "--" ? (parseFloat(chuva) > 0 ? "Chuva detectada" : "Sem chuva") : "Sem leitura";
-        if (stGas) stGas.textContent = gas !== "--" ? `${gas} PPM` : "Sem leitura";
-
-        // 5. Atualiza o texto de horário da última leitura na barra de status superior
-        const elAtualizacao = document.getElementById("atualizacao");
-        if (elAtualizacao) {
-            const horario = new Date().toLocaleTimeString('pt-BR');
-            elAtualizacao.textContent = `Última atualização: ${horario}`;
-        }
-
-    } catch (erro) {
-        console.error("Erro ao carregar dados do ThingSpeak:", erro);
-        const elAtualizacao = document.getElementById("atualizacao");
-        if (elAtualizacao) {
-            elAtualizacao.textContent = "Erro de conexão com o ThingSpeak";
-        }
+  function definirTexto(id, texto) {
+    const elemento = document.getElementById(id);
+    if (elemento) {
+      elemento.textContent = texto;
     }
-}
+  }
 
-// Executa assim que o HTML for carregado e repete a cada 15 segundos
-document.addEventListener("DOMContentLoaded", () => {
-    buscarDados();
-    setInterval(buscarDados, 15000);
-});
+  function formatarStatusTemp(valorBruto) {
+    const t = parseFloat(valorBruto);
+    if (Number.isNaN(t)) return "-- °C";
+    if (t >= 30) return `${valorBruto} °C (Calor)`;
+    if (t <= 18) return `${valorBruto} °C (Frio)`;
+    return `${valorBruto} °C (Agradável)`;
+  }
+
+  function formatarStatusUmid(valorBruto) {
+    const u = parseFloat(valorBruto);
+    if (Number.isNaN(u)) return "-- %";
+    if (u >= 70) return `${valorBruto} % (Umidade Alta)`;
+    if (u <= 30) return `${valorBruto} % (Ar Seco)`;
+    return `${valorBruto} % (Umidade Normal)`;
+  }
+
+  async function buscarDados() {
+    try {
+      const url = `https://api.thingspeak.com/channels/${CHANNEL_ID}/feeds/last.json?api_key=${API_KEY}`;
+      const resposta = await fetch(url);
+
+      if (!resposta.ok) {
+        throw new Error(`Erro HTTP: ${resposta.status}`);
+      }
+
+      const dados = await resposta.json();
+
+      // 1. Extrai os 5 campos do ThingSpeak
+      const luz = dados?.field1 ?? "--";
+      const chuva = dados?.field2 ?? "--";
+      const gas = dados?.field3 ?? "--";
+      const temp = dados?.field4 ?? "--";
+      const umid = dados?.field5 ?? "--";
+
+      // 2. Atualiza os números principais nos cartões
+      definirTexto("valor-luz", luz);
+      definirTexto("valor-chuva", chuva);
+      definirTexto("valor-gas", gas);
+      definirTexto("valor-temp", temp);
+      definirTexto("valor-umid", umid);
+
+      // 3. Atualiza as legendas de status de temperatura e umidade
+      definirTexto("status-temp", formatarStatusTemp(temp));
+      definirTexto("status-umid", formatarStatusUmid(umid));
+    } catch (erro) {
+      console.error("Erro ao carregar dados do ThingSpeak:", erro);
+    }
+  }
+
+  // Executa imediatamente ao abrir e repete a cada 15 segundos
+  buscarDados();
+  setInterval(buscarDados, INTERVALO_MS);
 </script>
 </body>
 </html>
