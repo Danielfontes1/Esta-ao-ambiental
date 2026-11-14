@@ -174,43 +174,43 @@ iframe {
     </footer>
   </main>
 
-  <script>
+
    <script>
-  function atualizarTela(dados) {
-    const luz = dados?.field1 ?? "--";
-    const chuva = dados?.field2 ?? "--";
-    const gas = dados?.field3 ?? "--";
-
-    const elLuz = document.getElementById("valor-luz");
-    const elChuva = document.getElementById("valor-chuva");
-    const elGas = document.getElementById("valor-gas");
-
-    if (elLuz) elLuz.textContent = luz;
-    if (elChuva) elChuva.textContent = chuva;
-    if (elGas) elGas.textContent = gas;
-  }
-
-  // Busca as leituras reais no ThingSpeak
+<script>
   async function buscarDados() {
     try {
-      // Substitua pela URL do endpoint do ThingSpeak (ex.: .../feeds/last.json)
-      const url = "https://thingspeak.mathworks.com/channels/3578582/sharing";
+      // 1. Endereço exato da API de dados do ThingSpeak com sua API Key
+      const url = "[https://thingspeak.mathworks.com/channels/3578582/sharing]";
       const resposta = await fetch(url);
 
       if (!resposta.ok) {
-        throw new Error(`HTTP ${resposta.status}`);
+        throw new Error(`Erro HTTP: ${resposta.status}`);
       }
 
       const dados = await resposta.json();
-      atualizarTela(dados);
+
+      // 2. Extrai as leituras dos 3 campos
+      const luz = dados?.field1 ?? "--";
+      const chuva = dados?.field2 ?? "--";
+      const gas = dados?.field3 ?? "--";
+
+      // 3. Atualiza os textos na tela (atenção ao 'l' minúsculo em valor-luz)
+      const elLuz = document.getElementById("valor-luz");
+      const elChuva = document.getElementById("valor-chuva");
+      const elGas = document.getElementById("valor-gas");
+
+      if (elLuz) elLuz.textContent = luz;
+      if (elChuva) elChuva.textContent = chuva;
+      if (elGas) elGas.textContent = gas;
     } catch (erro) {
-      console.error("Erro ao carregar dados:", erro);
+      console.error("Erro ao carregar dados do ThingSpeak:", erro);
     }
   }
 
-  // Carrega ao abrir a página e atualiza a cada 15 segundos
+  // Executa imediatamente e repete a cada 15 segundos
   buscarDados();
   setInterval(buscarDados, 15000);
+</script>
 </script>
 </body>
 </html>
