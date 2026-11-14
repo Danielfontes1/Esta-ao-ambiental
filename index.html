@@ -123,6 +123,9 @@
   </style>
 </head>
 <body>
+  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+  <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/3578582/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
   <main class="container">
     <header>
       <h1>Medidor de Clima Pedreira</h1>
@@ -160,9 +163,9 @@
 
   <script>
     function atualizarTela(dados) {
-      const luz = dados.luz ?? "--";
-      const chuva = dados.chuva ?? "--";
-      const gas = dados.gas ?? "--";
+      const luz = dados.field1 ?? "--";
+      const chuva = dados.field2 ?? "--";
+      const gas = dados.field3 ?? "--";
 
       document.getElementById("valor-luz").textContent = luz;
       document.getElementById("valor-chuva").textContent = chuva;
