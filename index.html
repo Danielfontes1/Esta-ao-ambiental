@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medidor de Clima Pedreira</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #e8f4ff 0%, #d4ebff 100%);
+      color: #000000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 780px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: 18px;
+      padding: 32px 24px;
+      box-shadow: 0 10px 28px rgba(0, 55, 110, 0.08);
+      text-align: center;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #000000;
+      letter-spacing: -0.02em;
+    }
+
+    .autor {
+      margin-top: 6px;
+      font-size: 0.98rem;
+      font-weight: 500;
+      color: #000000;
+      opacity: 0.85;
+    }
+
+    .status-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      font-size: 0.88rem;
+      color: #000000;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #000000;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: 14px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+    }
+
+    .card-label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #000000;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .card-value {
+      margin-top: 12px;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #000000;
+    }
+
+    .card-sub {
+      margin-top: 8px;
+      font-size: 0.9rem;
+      color: #000000;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: #000000;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Medidor de Clima Pedreira</h1>
+      <p class="autor">Criado por Daniel</p>
+      <div class="status-bar">
+        <span class="dot"></span>
+        <span id="atualizacao">Aguardando leitura dos sensores...</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <div class="card-label">Luz (LDR)</div>
+        <div class="card-value" id="valor-luz">--</div>
+        <div class="card-sub" id="status-luz">Sem leitura</div>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Chuva</div>
+        <div class="card-value" id="valor-chuva">--</div>
+        <div class="card-sub" id="status-chuva">Sem leitura</div>
+      </article>
+
+      <article class="card">
+        <div class="card-label">Gás (MQ-135)</div>
+        <div class="card-value" id="valor-gas">--</div>
+        <div class="card-sub" id="status-gas">Sem leitura</div>
+      </article>
+    </section>
+
+    <footer>
+      Monitoramento ambiental • Pedreira - SP
+    </footer>
+  </main>
+
+  <script>
+    function atualizarTela(dados) {
+      const luz = dados.luz ?? "--";
+      const chuva = dados.chuva ?? "--";
+      const gas = dados.gas ?? "--";
+
+      document.getElementById("valor-luz").textContent = luz;
+      document.getElementById("valor-chuva").textContent = chuva;
+      document.getElementById("valor-gas").textContent = gas;
+
+      // Interpretação simples para apresentação
+      document.getElementById("status-luz").textContent =
+        typeof luz === "number"
+          ? luz > 2000 ? "Ambiente claro" : "Pouca luz"
+          : "Sem leitura";
+
+      document.getElementById("status-chuva").textContent =
+        typeof chuva === "number"
+          ? chuva < 2000 ? "Umidade / chuva detectada" : "Tempo seco"
+          : "Sem leitura";
+
+      document.getElementById("status-gas").textContent =
+        typeof gas === "number"
+          ? gas > 2200 ? "Concentração elevada" : "Ar normal"
+          : "Sem leitura";
+
+      const agora = new Date().toLocaleTimeString("pt-BR");
+      document.getElementById("atualizacao").textContent =
+        `Última atualização: ${agora}`;
+    }
+
+    // Exemplo inicial para você testar o visual (pode remover depois)
+    atualizarTela({ luz: 2450, chuva: 3100, gas: 1120 });
+
+    // Quando tiver um servidor/API retornando JSON em GET /api/sensores:
+    // setInterval(async () => {
+    //   try {
+    //     const resposta = await fetch("/api/sensores");
+    //     const dados = await resposta.json();
+    //     atualizarTela(dados);
+    //   } catch (erro) {
+    //     console.error("Erro ao buscar dados:", erro);
+    //   }
+    // }, 5000);
+  </script>
+</body>
+</html>
