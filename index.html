@@ -180,7 +180,7 @@ iframe {
   async function buscarDados() {
     try {
       // 1. Endereço exato da API de dados do ThingSpeak com sua API Key
-      const url = "QJ89U0PM4PB95D1L";
+      const url = "https://api.thingspeak.com/channels/3578582/feeds/last.json?api_key=QJ89U0PM4PB95D1L";
       const resposta = await fetch(url);
 
       if (!resposta.ok) {
