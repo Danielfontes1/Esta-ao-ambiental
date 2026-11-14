@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Medidor de Clima Pedreira</title>
   <style>
+    /* Dá espaçamento e margem para os gráficos não ficarem colados */
+iframe {
+  margin: 15px;
+  border-radius: 8px;
+}
+
+/* Dá espaço entre os blocos da página */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
     * {
       box-sizing: border-box;
       margin: 0;
@@ -162,49 +175,42 @@
   </main>
 
   <script>
-    function atualizarTela(dados) {
-      const luz = dados.field1 ?? "--";
-      const chuva = dados.field2 ?? "--";
-      const gas = dados.field3 ?? "--";
+   <script>
+  function atualizarTela(dados) {
+    const luz = dados?.field1 ?? "--";
+    const chuva = dados?.field2 ?? "--";
+    const gas = dados?.field3 ?? "--";
 
-      document.getElementById("valor-luz").textContent = luz;
-      document.getElementById("valor-chuva").textContent = chuva;
-      document.getElementById("valor-gas").textContent = gas;
+    const elLuz = document.getElementById("valor-luz");
+    const elChuva = document.getElementById("valor-chuva");
+    const elGas = document.getElementById("valor-gas");
 
-      // Interpretação simples para apresentação
-      document.getElementById("status-luz").textContent =
-        typeof luz === "number"
-          ? luz > 2000 ? "Ambiente claro" : "Pouca luz"
-          : "Sem leitura";
+    if (elLuz) elLuz.textContent = luz;
+    if (elChuva) elChuva.textContent = chuva;
+    if (elGas) elGas.textContent = gas;
+  }
 
-      document.getElementById("status-chuva").textContent =
-        typeof chuva === "number"
-          ? chuva < 2000 ? "Umidade / chuva detectada" : "Tempo seco"
-          : "Sem leitura";
+  // Busca as leituras reais no ThingSpeak
+  async function buscarDados() {
+    try {
+      // Substitua pela URL do endpoint do ThingSpeak (ex.: .../feeds/last.json)
+      const url = "https://thingspeak.mathworks.com/channels/3578582/sharing";
+      const resposta = await fetch(url);
 
-      document.getElementById("status-gas").textContent =
-        typeof gas === "number"
-          ? gas > 2200 ? "Concentração elevada" : "Ar normal"
-          : "Sem leitura";
+      if (!resposta.ok) {
+        throw new Error(`HTTP ${resposta.status}`);
+      }
 
-      const agora = new Date().toLocaleTimeString("pt-BR");
-      document.getElementById("atualizacao").textContent =
-        `Última atualização: ${agora}`;
+      const dados = await resposta.json();
+      atualizarTela(dados);
+    } catch (erro) {
+      console.error("Erro ao carregar dados:", erro);
     }
+  }
 
-    // Exemplo inicial para você testar o visual (pode remover depois)
-    atualizarTela({ luz: 2450, chuva: 3100, gas: 1120 });
-
-    // Quando tiver um servidor/API retornando JSON em GET /api/sensores:
-    // setInterval(async () => {
-    //   try {
-    //     const resposta = await fetch("/api/sensores");
-    //     const dados = await resposta.json();
-    //     atualizarTela(dados);
-    //   } catch (erro) {
-    //     console.error("Erro ao buscar dados:", erro);
-    //   }
-    // }, 5000);
-  </script>
+  // Carrega ao abrir a página e atualiza a cada 15 segundos
+  buscarDados();
+  setInterval(buscarDados, 15000);
+</script>
 </body>
 </html>
